@@ -1,0 +1,461 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "GPS Tracker IOT - API",
+    "description": "API REST du projet GPS Tracker IOT. Permet de recevoir les positions GPS depuis un ESP32 + GPS NEO-6M, consulter l'historique, exporter les donnees et envoyer des notifications Telegram.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Projet IOT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4900",
+      "description": "Serveur local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Position",
+      "description": "Gestion des positions GPS (reception depuis ESP32, historique, suppression)"
+    },
+    {
+      "name": "Export",
+      "description": "Export des donnees GPS en CSV ou JSON"
+    },
+    {
+      "name": "Telegram",
+      "description": "Notifications Telegram (envoi de position, alertes geofencing)"
+    }
+  ],
+  "paths": {
+    "/api/position": {
+      "post": {
+        "tags": ["Position"],
+        "summary": "Envoyer une position GPS",
+        "description": "Recoit une position GPS depuis l'ESP32 ou le simulateur. La position est stockee en memoire et diffusee en temps reel via WebSocket a tous les clients connectes.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PositionInput"
+              },
+              "examples": {
+                "position_basique": {
+                  "summary": "Position avec coordonnees uniquement",
+                  "value": {
+                    "lat": -18.9100,
+                    "lng": 47.5255
+                  }
+                },
+                "position_complete": {
+                  "summary": "Position complete depuis ESP32",
+                  "value": {
+                    "lat": -18.9100,
+                    "lng": 47.5255,
+                    "speed": 25.3,
+                    "altitude": 1280.5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Position enregistree avec succes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "position": {
+                      "$ref": "#/components/schemas/Position"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parametres manquants",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "lat et lng sont requis"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/positions": {
+      "get": {
+        "tags": ["Position"],
+        "summary": "Recuperer l'historique des positions",
+        "description": "Retourne toutes les positions GPS enregistrees depuis le demarrage du serveur, triees par ordre chronologique.",
+        "responses": {
+          "200": {
+            "description": "Liste des positions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Position"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Position"],
+        "summary": "Effacer tout l'historique",
+        "description": "Supprime toutes les positions GPS en memoire et notifie tous les clients WebSocket pour reinitialiser leur affichage.",
+        "responses": {
+          "200": {
+            "description": "Historique efface",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "cleared"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/export/csv": {
+      "get": {
+        "tags": ["Export"],
+        "summary": "Exporter l'historique en CSV",
+        "description": "Telecharge un fichier CSV contenant toutes les positions GPS enregistrees. Colonnes : latitude, longitude, vitesse_kmh, altitude_m, timestamp.",
+        "responses": {
+          "200": {
+            "description": "Fichier CSV telecharge",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "example": "latitude,longitude,vitesse_kmh,altitude_m,timestamp\n-18.910000,47.525500,25.3,1280.5,2026-04-15T10:30:00.000Z"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aucune donnee a exporter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Aucune donnee a exporter"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/export/json": {
+      "get": {
+        "tags": ["Export"],
+        "summary": "Exporter l'historique en JSON",
+        "description": "Telecharge un fichier JSON contenant toutes les positions GPS enregistrees.",
+        "responses": {
+          "200": {
+            "description": "Fichier JSON telecharge",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Position"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aucune donnee a exporter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Aucune donnee a exporter"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/telegram/status": {
+      "get": {
+        "tags": ["Telegram"],
+        "summary": "Verifier le statut du bot Telegram",
+        "description": "Verifie si le bot Telegram est correctement configure avec un token et un chat ID valides dans le fichier .env.",
+        "responses": {
+          "200": {
+            "description": "Statut du bot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "true si le bot est configure, false sinon"
+                    }
+                  }
+                },
+                "examples": {
+                  "actif": {
+                    "summary": "Bot configure",
+                    "value": { "enabled": true }
+                  },
+                  "inactif": {
+                    "summary": "Bot non configure",
+                    "value": { "enabled": false }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/telegram/send": {
+      "post": {
+        "tags": ["Telegram"],
+        "summary": "Envoyer la derniere position par Telegram",
+        "description": "Envoie la derniere position GPS enregistree au chat Telegram configure. Envoie un message texte avec les coordonnees suivi d'une localisation Telegram.",
+        "responses": {
+          "200": {
+            "description": "Position envoyee avec succes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bot Telegram non configure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Telegram non configure"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aucune position disponible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Aucune position disponible"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur d'envoi Telegram",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/telegram/alert": {
+      "post": {
+        "tags": ["Telegram"],
+        "summary": "Envoyer une alerte de geofencing",
+        "description": "Envoie une alerte Telegram lorsque le tracker GPS sort d'une zone de geofencing definie. Declenchee automatiquement par le frontend.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["lat", "lng"],
+                "properties": {
+                  "lat": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Latitude de la position en breach",
+                    "example": -18.9150
+                  },
+                  "lng": {
+                    "type": "number",
+                    "format": "double",
+                    "description": "Longitude de la position en breach",
+                    "example": 47.5300
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Alerte envoyee",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parametres manquants ou bot non configure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur d'envoi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PositionInput": {
+        "type": "object",
+        "required": ["lat", "lng"],
+        "properties": {
+          "lat": {
+            "type": "number",
+            "format": "double",
+            "description": "Latitude en degres decimaux",
+            "example": -18.9100
+          },
+          "lng": {
+            "type": "number",
+            "format": "double",
+            "description": "Longitude en degres decimaux",
+            "example": 47.5255
+          },
+          "speed": {
+            "type": "number",
+            "format": "double",
+            "description": "Vitesse en km/h (fournie par le GPS NEO-6M)",
+            "example": 25.3,
+            "default": 0
+          },
+          "altitude": {
+            "type": "number",
+            "format": "double",
+            "description": "Altitude en metres (fournie par le GPS NEO-6M)",
+            "example": 1280.5,
+            "default": 0
+          }
+        }
+      },
+      "Position": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "format": "double",
+            "description": "Latitude",
+            "example": -18.9100
+          },
+          "lng": {
+            "type": "number",
+            "format": "double",
+            "description": "Longitude",
+            "example": 47.5255
+          },
+          "speed": {
+            "type": "number",
+            "format": "double",
+            "description": "Vitesse en km/h",
+            "example": 25.3
+          },
+          "altitude": {
+            "type": "number",
+            "format": "double",
+            "description": "Altitude en metres",
+            "example": 1280.5
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date et heure de reception",
+            "example": "2026-04-15T10:30:00.000Z"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Message d'erreur"
+          }
+        }
+      }
+    }
+  }
+}
