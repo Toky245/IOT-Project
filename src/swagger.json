@@ -1,14 +1,18 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "GPS Tracker IOT - API",
-    "description": "API REST du projet GPS Tracker IOT. Permet de recevoir les positions GPS depuis un ESP32 + GPS NEO-6M, consulter l'historique, exporter les donnees et envoyer des notifications Telegram.",
+    "title": "Localiseo - API",
+    "description": "API REST du projet Localiseo IOT. Permet de recevoir les positions GPS depuis un ESP32 + GPS NEO-6M, consulter l'historique, exporter les donnees et envoyer des notifications Telegram.",
     "version": "1.0.0",
     "contact": {
       "name": "Projet IOT"
     }
   },
   "servers": [
+    {
+      "url": "https://localiseo.onrender.com",
+      "description": "Serveur de production"
+    },
     {
       "url": "http://localhost:4900",
       "description": "Serveur local"

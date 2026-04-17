@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // Documentation API
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc, {
   customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'GPS Tracker - API Documentation'
+  customSiteTitle: 'Localiseo - API Documentation'
 }));
 
 // Routes API

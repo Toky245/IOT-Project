@@ -2,6 +2,7 @@
 
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 #include <TinyGPSPlus.h>
 #include <HardwareSerial.h>
 
@@ -10,10 +11,9 @@ const char* WIFI_SSID = "Redmi 10X Pro";
 const char* WIFI_PASSWORD = "howUd@r3";
 
 // -- Configuration serveur --
-const char* SERVER_URL = "http://192.168.215.60:4900/api/position";
+const char* SERVER_URL = "https://localiseo.onrender.com/api/position";
 
 // -- Configuration GPS --
-// Pins de connexion GPS NEO-6M -> ESP32
 #define GPS_RX 16  // GPIO16 -> TX du GPS
 #define GPS_TX 17  // GPIO17 -> RX du GPS
 #define GPS_BAUD 9600
@@ -33,7 +33,7 @@ void sendPosition();
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("[GPS Tracker] Demarrage...");
+  Serial.println("[Localiseo] Demarrage...");
 
   // Initialiser le port serie du GPS
   gpsSerial.begin(GPS_BAUD, SERIAL_8N1, GPS_RX, GPS_TX);
@@ -111,9 +111,12 @@ void sendPosition() {
                  " | Alt: " + String(altitude, 1) + " m" +
                  " | Sat: " + String(gps.satellites.value()));
 
-  // Envoi HTTP POST
+  // Envoi HTTPS POST (sans verification certificat)
+  WiFiClientSecure client;
+  client.setInsecure();
+
   HTTPClient http;
-  http.begin(SERVER_URL);
+  http.begin(client, SERVER_URL);
   http.addHeader("Content-Type", "application/json");
 
   int httpCode = http.POST(json);
