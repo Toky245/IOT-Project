@@ -27,28 +27,28 @@ class TelegramService {
     });
   }
 
-  // Envoyer la position avec un lien Google Maps
+  // Envoyer la position avec un lien vers Localiseo
   sendPosition(position) {
-    var mapsUrl = 'https://www.google.com/maps?q=' + position.lat + ',' + position.lng;
-    var text = '<b>GPS Tracker - Position</b>\n\n' +
+    var appUrl = 'https://localiseo.onrender.com';
+    var text = '<b>Localiseo - Position</b>\n\n' +
       'Lat: <code>' + position.lat + '</code>\n' +
       'Lng: <code>' + position.lng + '</code>\n' +
       'Vitesse: ' + position.speed + ' km/h\n' +
       'Altitude: ' + position.altitude + ' m\n' +
       'Heure: ' + new Date(position.timestamp).toLocaleTimeString('fr-FR') + '\n\n' +
-      '<a href="' + mapsUrl + '">Voir sur Google Maps</a>';
+      '<a href="' + appUrl + '">Voir en temps reel sur Localiseo</a>';
 
     return this.sendMessage(text);
   }
 
   // Envoyer une alerte de geofencing
   sendGeofenceAlert(position) {
-    var mapsUrl = 'https://www.google.com/maps?q=' + position.lat + ',' + position.lng;
+    var appUrl = 'https://localiseo.onrender.com';
     var text = '<b>ALERTE - Sortie de zone !</b>\n\n' +
       'Le tracker a quitte la zone de securite.\n\n' +
       'Lat: <code>' + position.lat + '</code>\n' +
       'Lng: <code>' + position.lng + '</code>\n\n' +
-      '<a href="' + mapsUrl + '">Voir sur Google Maps</a>';
+      '<a href="' + appUrl + '">Voir en temps reel sur Localiseo</a>';
 
     return this.sendMessage(text);
   }
