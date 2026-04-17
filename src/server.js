@@ -10,6 +10,7 @@ const TelegramService = require('./services/telegram');
 const { router: positionRouter, setWebSocketService } = require('./routes/position');
 const exportRouter = require('./routes/export');
 const { router: telegramRouter, setTelegramService } = require('./routes/telegram');
+const geocodeRouter = require('./routes/geocode');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerDoc = require('./swagger.json');
@@ -32,6 +33,7 @@ app.use('/api/position', positionRouter);
 app.use('/api/positions', positionRouter);
 app.use('/api/export', exportRouter);
 app.use('/api/telegram', telegramRouter);
+app.use('/api/geocode', geocodeRouter);
 
 // Services
 const wsService = new WebSocketService(server);

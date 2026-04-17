@@ -11,7 +11,7 @@ var Tutorial = (function () {
   var steps = [
     {
       target: '.logo',
-      title: 'Bienvenue sur GPS Tracker',
+      title: 'Bienvenue sur Localiseo',
       text: 'Cette application affiche en temps reel la position de votre tracker GPS sur une carte interactive.',
       position: 'bottom'
     },
@@ -49,6 +49,12 @@ var Tutorial = (function () {
       target: '#btn-geofence',
       title: 'Zone de securite',
       text: 'Cliquez ici puis placez des points sur la carte pour creer une zone de securite. Une alerte est envoyee si le tracker sort de cette zone.',
+      position: 'top'
+    },
+    {
+      target: '#btn-replay',
+      title: 'Replay du trajet',
+      text: 'Rejoue le parcours du tracker sur la carte avec une animation. Vous pouvez mettre en pause, changer la vitesse ou arreter le replay.',
       position: 'top'
     },
     {

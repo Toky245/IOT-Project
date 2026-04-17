@@ -143,7 +143,7 @@ var MapManager = (function () {
 
     if (!marker) {
       marker = L.marker(latlng, { icon: trackerIcon }).addTo(map);
-      marker.bindPopup('<b>GPS Tracker</b><br>Position en direct');
+      marker.bindPopup('<b>Localiseo</b><br>Position en direct');
     } else {
       marker.setLatLng(latlng);
     }

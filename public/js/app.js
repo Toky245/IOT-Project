@@ -9,6 +9,7 @@
 
   MapManager.init('map', DEFAULT_CENTER);
   Geofence.init(MapManager.getMap());
+  Replay.init(MapManager.getMap());
 
   // Traitement d'une nouvelle position
   function handlePosition(pos) {
@@ -133,6 +134,44 @@
   }
 
   document.getElementById('btn-telegram-map').addEventListener('click', sendTelegram);
+
+  // Replay
+  var replayPanel = document.getElementById('replay-panel');
+
+  document.getElementById('btn-replay').addEventListener('click', function () {
+    var state = Replay.getState();
+    if (state.playing) {
+      Replay.stop();
+    } else {
+      Replay.start(positions);
+    }
+  });
+
+  document.getElementById('replay-pause').addEventListener('click', function () {
+    Replay.togglePause();
+  });
+
+  document.getElementById('replay-stop').addEventListener('click', function () {
+    Replay.stop();
+  });
+
+  document.getElementById('replay-speed').addEventListener('change', function () {
+    Replay.setSpeed(parseFloat(this.value));
+  });
+
+  Replay.onStateChange(function (state) {
+    if (state.playing) {
+      replayPanel.style.display = 'flex';
+      document.getElementById('replay-progress').textContent =
+        state.index + ' / ' + state.total;
+      document.getElementById('replay-pause-icon').textContent =
+        state.paused ? 'play_arrow' : 'pause';
+      document.getElementById('btn-replay').classList.add('map-btn-active');
+    } else {
+      replayPanel.style.display = 'none';
+      document.getElementById('btn-replay').classList.remove('map-btn-active');
+    }
+  });
 
   // -- Historique etendu --
   document.getElementById('btn-history-expand').addEventListener('click', function () {

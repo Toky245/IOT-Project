@@ -6,13 +6,11 @@
 #include <HardwareSerial.h>
 
 // -- Configuration WiFi --
-const char* WIFI_SSID = "VOTRE_WIFI";
-const char* WIFI_PASSWORD = "VOTRE_MOT_DE_PASSE";
+const char* WIFI_SSID = "Redmi 10X Pro";
+const char* WIFI_PASSWORD = "howUd@r3";
 
 // -- Configuration serveur --
-// Remplacer par l'IP de votre PC sur le reseau local
-// Pour trouver l'IP : ifconfig (Linux/Mac) ou ipconfig (Windows)
-const char* SERVER_URL = "http://192.168.1.100:4900/api/position";
+const char* SERVER_URL = "http://192.168.215.60:4900/api/position";
 
 // -- Configuration GPS --
 // Pins de connexion GPS NEO-6M -> ESP32
@@ -28,6 +26,10 @@ HardwareSerial gpsSerial(1);
 
 unsigned long lastSendTime = 0;
 bool wifiConnected = false;
+
+// Prototypes
+void connectWiFi();
+void sendPosition();
 
 void setup() {
   Serial.begin(115200);

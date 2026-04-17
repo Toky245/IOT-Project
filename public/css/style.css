@@ -78,11 +78,16 @@ header {
 .logo-icon {
   color: var(--accent);
   font-size: 22px;
+  vertical-align: middle;
+  display: inline;
+  line-height: 1;
+  margin: 0 -1px;
 }
 
 .logo h1 {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
   color: var(--text-primary);
 }
 
@@ -638,6 +643,106 @@ header {
   font-size: 18px;
 }
 
+/* ========== Address display ========== */
+.address-value {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+  text-align: right;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ========== Replay panel ========== */
+.replay-panel {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 16px var(--shadow);
+  font-family: 'Inter', sans-serif;
+}
+
+.replay-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.replay-panel-icon {
+  color: #fb8c00;
+  font-size: 22px;
+}
+
+.replay-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.replay-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-hover);
+  color: var(--icon-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.replay-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.replay-btn:hover {
+  background: var(--bg-active);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.replay-btn-stop:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: rgba(248, 81, 73, 0.1);
+}
+
+.replay-speed {
+  height: 34px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  outline: none;
+}
+
+.replay-speed option {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+}
+
 /* ========== Map btn active state (geofence drawing) ========== */
 .map-btn-active {
   background: var(--bg-active) !important;
@@ -1025,7 +1130,7 @@ header {
   }
 
   .logo h1 {
-    font-size: 14px;
+    font-size: 17px;
   }
 
   #sidebar {
